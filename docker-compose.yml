@@ -1,0 +1,8 @@
+version: "3.1"
+
+services:
+  nginx:
+    image: nginx:1.17-alpine
+    container_name: NGINX_DEDICATED
+    ports:
+      - "80:80"

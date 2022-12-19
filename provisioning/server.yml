@@ -1,0 +1,8 @@
+---
+-   name: Provision Site
+    hosts: server
+    remote_user: root
+    become: true
+    become_method: sudo
+    roles:
+        - docker
