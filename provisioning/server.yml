@@ -1,7 +1,7 @@
 ---
 -   name: Provision Site
     hosts: server
-    remote_user: root
+    remote_user: lera
     become: true
     become_method: sudo
     roles:
