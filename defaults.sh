@@ -16,3 +16,8 @@ ssh lera@81.163.30.82 -p 8404
 # Для работы докера
 sudo mkdir /sys/fs/cgroup/systemd
 sudo mount -t cgroup -o none,name=systemd cgroup /sys/fs/cgroup/systemd
+
+
+sudo apt install nginx
+service nginx status -- статус nginx
+sudo systemctl restart nginx
