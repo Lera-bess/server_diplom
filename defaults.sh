@@ -21,3 +21,9 @@ sudo mount -t cgroup -o none,name=systemd cgroup /sys/fs/cgroup/systemd
 sudo apt install nginx
 service nginx status -- статус nginx
 sudo systemctl restart nginx
+
+sudo apt install fail2ban
+systemctl status fail2ban.service
+cd /etc/fail2ban
+sudo cp jail.conf jail.local
+sudo systemctl restart fail2ban
