@@ -1,0 +1,150 @@
+# Comments: use '#' for comment lines and ';' (following a space) for inline comments
+
+
+[INCLUDES]
+
+#before = paths-distro.conf
+before = paths-debian.conf
+
+# The DEFAULT allows a global definition of the options. They can be overridden
+# in each jail afterwards.
+
+[DEFAULT]
+
+#
+# MISCELLANEOUS OPTIONS
+#
+
+# "bantime.increment" allows to use database for searching of previously banned ip's to increase a
+# default ban time using special formula, default it is banTime * 1, 2, 4, 8, 16, 32...
+#bantime.increment = true
+
+# "bantime.rndtime" is the max number of seconds using for mixing with random time
+# to prevent "clever" botnets calculate exact time IP can be unbanned again:
+#bantime.rndtime =
+
+# "bantime.maxtime" is the max number of seconds using the ban time can reach (doesn't grow further)
+#bantime.maxtime =
+
+# "bantime.factor" is a coefficient to calculate exponent growing of the formula or common multiplier,
+# default value of factor is 1 and with default value of formula, the ban time
+# grows by 1, 2, 4, 8, 16 ...
+#bantime.factor = 1
+
+# "bantime.formula" used by default to calculate next value of ban time, default value below,
+# the same ban time growing will be reached by multipliers 1, 2, 4, 8, 16, 32...
+#bantime.formula = ban.Time * (1<<(ban.Count if ban.Count<20 else 20)) * banFactor
+#
+# more aggressive example of formula has the same values only for factor "2.0 / 2.885385" :
+#bantime.formula = ban.Time * math.exp(float(ban.Count+1)*banFactor)/math.exp(1*banFactor)
+
+# "bantime.multipliers" used to calculate next value of ban time instead of formula, coresponding
+# previously ban count and given "bantime.factor" (for multipliers default is 1);
+# following example grows ban time by 1, 2, 4, 8, 16 ... and if last ban count greater as multipliers count,
+# always used last multiplier (64 in example), for factor '1' and original ban time 600 - 10.6 hours
+#bantime.multipliers = 1 2 4 8 16 32 64
+# following example can be used for small initial ban time (bantime=60) - it grows more aggressive at begin,
+# for bantime=60 the multipliers are minutes and equal: 1 min, 5 min, 30 min, 1 hour, 5 hour, 12 hour, 1 day, 2 day
+#bantime.multipliers = 1 5 30 60 300 720 1440 2880
+
+# "bantime.overalljails" (if true) specifies the search of IP in the database will be executed
+# cross over all jails, if false (dafault), only current jail of the ban IP will be searched
+#bantime.overalljails = false
+
+# --------------------
+
+# "ignoreself" specifies whether the local resp. own IP addresses should be ignored
+# (default is true). Fail2ban will not ban a host which matches such addresses.
+#ignoreself = true
+
+# "ignoreip" can be a list of IP addresses, CIDR masks or DNS hosts. Fail2ban
+# will not ban a host which matches an address in this list. Several addresses
+# can be defined using space (and/or comma) separator.
+#ignoreip = 127.0.0.1/8 ::1
+
+# External command that will take an tagged arguments to ignore, e.g. <ip>,
+# and return true if the IP is to be ignored. False otherwise.
+#
+# ignorecommand = /path/to/command <ip>
+ignorecommand =
+
+# "bantime" is the number of seconds that a host is banned.
+bantime  = 10m
+
+# A host is banned if it has generated "maxretry" during the last "findtime"
+# seconds.
+findtime  = 10m
+
+# "maxretry" is the number of failures before a host get banned.
+maxretry = 5
+
+# "maxmatches" is the number of matches stored in ticket (resolvable via tag <matches> in actions).
+maxmatches = %(maxretry)s
+
+backend = auto
+
+usedns = warn
+
+enabled = false
+
+
+# "mode" defines the mode of the filter (see corresponding filter implementation for more info).
+mode = normal
+
+filter = %(__name__)s[mode=%(mode)s]
+
+destemail = root@localhost
+
+sender = root@<fq-hostname>
+
+mta = sendmail
+
+protocol = tcp
+
+chain = <known/chain>
+
+port = 0:65535
+
+fail2ban_agent = Fail2Ban/%(fail2ban_version)s
+
+banaction = iptables-multiport
+banaction_allports = iptables-allports
+
+action_ = %(banaction)s[port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+
+action_mw = %(action_)s
+            %(mta)s-whois[sender="%(sender)s", dest="%(destemail)s", protocol="%(protocol)s", chain="%(chain)s"]
+
+action_mwl = %(action_)s
+             %(mta)s-whois-lines[sender="%(sender)s", dest="%(destemail)s", logpath="%(logpath)s", chain="%(chain)s"]
+
+action_cf_mwl = cloudflare[cfuser="%(cfemail)s", cftoken="%(cfapikey)s"]
+                %(mta)s-whois-lines[sender="%(sender)s", dest="%(destemail)s", logpath="%(logpath)s", chain="%(chain)s"]
+
+action_blocklist_de  = blocklist_de[email="%(sender)s", service="%(__name__)s", apikey="%(blocklist_de_apikey)s", agent="%(fail2ban_agent)s"]
+action_badips = badips.py[category="%(__name__)s", banaction="%(banaction)s", agent="%(fail2ban_agent)s"]
+action_badips_report = badips[category="%(__name__)s", agent="%(fail2ban_agent)s"]
+action = %(action_)s
+
+
+#
+# JAILS
+#
+
+#
+# SSH servers
+#
+
+[sshd]
+
+# To use more aggressive sshd modes set filter parameter "mode" in jail.local:
+# normal (default), ddos, extra or aggressive (combines all).
+# See "tests/files/logs/sshd" or "filter.d/sshd.conf" for usage example and details.
+#mode   = normal
+enabled  = true
+port     = 8404
+logpath  = %(sshd_log)s
+backend  = %(sshd_backend)s
+maxretry = 3
+findtime = 1d
+bantime  = 4w

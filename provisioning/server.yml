@@ -4,9 +4,8 @@
     remote_user: lera
     become: true
     become_method: sudo
-    vars:
-        nginx_conf: api.conf
-        remote_nginx_conf: /etc/nginx/conf.d/api.conf
     roles:
+        - ssh
         - docker
         - nginx
+        - fail2ban
