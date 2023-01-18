@@ -1,0 +1,37 @@
+---
+- name: Install ufw
+  apt:
+    name: ufw
+    state: latest
+    update_cache: yes
+
+- name: UFW reset
+  community.general.ufw:
+    state: reset
+
+- name: UFW allow outgoing
+  community.general.ufw:
+    state: enabled
+    direction: outgoing
+    policy: allow
+
+- name: UFW deny incoming
+  community.general.ufw:
+    state: enabled
+    direction: incoming
+    policy: deny
+
+- name: Open http port 81
+  ufw:
+    rule: allow
+    port: '81'
+
+- name: Open ssh port 8404
+  ufw:
+    rule: allow
+    port: '8404'
+
+- name: Restart ufw
+  service:
+    name: ufw
+    state: restarted

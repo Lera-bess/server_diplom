@@ -9,3 +9,4 @@
         - docker
         - nginx
         - fail2ban
+        - ufw

@@ -10,6 +10,8 @@ init:
 	cd provisioning && make server-init && make server-upgrade
 
 deploy:
+	ssh ${USER}@${ADDR} -p ${PORT} 'sudo mkdir -p /sys/fs/cgroup/systemd'
+	ssh ${USER}@${ADDR} -p ${PORT} 'sudo mountpoint -q /sys/fs/cgroup/systemd || sudo mount -t cgroup -o none,name=systemd cgroup /sys/fs/cgroup/systemd'
 	ssh ${USER}@${ADDR} -p ${PORT} 'rm -rf server'
 	ssh ${USER}@${ADDR} -p ${PORT} 'mkdir server'
 	scp -P ${PORT} docker-compose.yml ${USER}@${ADDR}:server/docker-compose.yml
