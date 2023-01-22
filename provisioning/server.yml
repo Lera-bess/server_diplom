@@ -5,8 +5,10 @@
     become: true
     become_method: sudo
     roles:
-        - ssh
-        - docker
+#        - ssh
+#        - docker
+#        - ufw
+#        - certbot
+        - site
         - nginx
         - fail2ban
-        - ufw

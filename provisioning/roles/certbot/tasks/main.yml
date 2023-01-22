@@ -1,0 +1,20 @@
+---
+-   name: Install Certbot
+    apt:
+      name: certbot
+      state: present
+      update_cache: yes
+
+-   name: Copy Certbot configuration
+    copy:
+      src: cli.ini
+      dest: /etc/letsencrypt/cli.ini
+      mode: preserve
+
+-   name: Remove useless packages
+    apt:
+      autoclean: yes
+
+-   name: Remove useless dependencies
+    apt:
+      autoremove: yes

@@ -1,0 +1,47 @@
+---
+- name: Creates /var/www/html directory
+  file:
+    path: /var/www/html
+    state: directory
+
+- name: Creates /etc/letsencrypt directory
+  file:
+    path: /etc/letsencrypt
+    state: directory
+
+- name: Copy default nginx config
+  copy:
+      src: default.conf
+      dest: /etc/nginx/conf.d/default.conf
+      mode: preserve
+
+- name: Restart Nginx
+  service:
+      name: nginx
+      state: restarted
+
+-   name: Check if certificate already exists
+    stat:
+      path: /etc/letsencrypt/live/{{ item }}/cert.pem
+    register: letsencrypt_certs
+    with_items: "{{ certbot_hosts }}"
+
+-   name: Check if server is running
+    wait_for:
+      port: 80
+      timeout: 1
+    register: port_check
+    ignore_errors: yes
+
+-   name: Up certbot standalone Apache
+    shell: "docker run -d --name apache -v /var/www/html:/usr/local/apache2/htdocs/ -p 80:80 httpd:2.4"
+    when: port_check.failed == true
+
+-   name: Generate new certificate
+    shell: "certbot certonly --noninteractive --agree-tos --email {{ certbot_email }} -d {{ item.item }}"
+    with_items: "{{ letsencrypt_certs.results }}"
+    when: not item.stat.exists
+
+-   name: Down certbot Apache
+    shell: "docker rm -f apache"
+    when: port_check.failed == true

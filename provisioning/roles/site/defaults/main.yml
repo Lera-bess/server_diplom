@@ -1,0 +1,3 @@
+certbot_email: mail@lbess.ru
+certbot_hosts:
+  - lbess.ru
