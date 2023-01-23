@@ -21,10 +21,15 @@
     direction: incoming
     policy: deny
 
-- name: Open http port 81
+- name: Open http port 80
   ufw:
     rule: allow
-    port: '81'
+    port: '80'
+
+- name: Open ssl port 443
+  ufw:
+    rule: allow
+    port: '443'
 
 - name: Open ssh port 8404
   ufw:

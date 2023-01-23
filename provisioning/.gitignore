@@ -1,1 +1,3 @@
 /hosts.yml
+/roles/nginx/files/lbess.ru.crt
+/roles/nginx/files/lbess.ru.key

@@ -5,6 +5,18 @@
     state: latest
     update_cache: yes
 
+- name: Copy ssl crt
+  copy:
+    src: lbess.ru.crt
+    dest: /etc/ssl/lbess.ru.crt
+    mode: preserve
+
+- name: Copy ssl conf
+  copy:
+    src: lbess.ru.key
+    dest: /etc/ssl/lbess.ru.key
+    mode: preserve
+
 - name: Copy nginx config
   copy:
     src: api.conf
