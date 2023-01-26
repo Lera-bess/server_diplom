@@ -1,5 +1,5 @@
 ---
--   name: Provision Site
+-   name: Provision Server
     hosts: server
     remote_user: lera
     become: true
