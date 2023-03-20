@@ -4,6 +4,7 @@
 include .env
 export
 HOST = ${USER}@${ADDR}
+.PHONY: init
 #------------------------------##########--------------------------------
 
 init: create-user sshd-playbook server-playbook upgrade-playbook deploy
