@@ -1,6 +1,6 @@
 ---
 -   name: Upgrade
-    hosts: site
+    hosts: server
     remote_user: lera
     become: true
     become_method: sudo

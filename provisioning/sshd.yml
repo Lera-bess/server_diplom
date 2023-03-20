@@ -1,0 +1,8 @@
+---
+-   name: Provision SSHD
+    hosts: server_root
+    remote_user: root
+    become: true
+    become_method: sudo
+    roles:
+        - ssh

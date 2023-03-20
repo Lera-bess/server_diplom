@@ -6,8 +6,17 @@ export
 HOST = ${USER}@${ADDR}
 #------------------------------##########--------------------------------
 
-init:
-	cd provisioning && make server-init && make server-upgrade
+init: create-user sshd-playbook server-playbook upgrade-playbook deploy
+update: server-playbook deploy
+
+server-playbook:
+	cd provisioning && ansible-playbook -i hosts.yml server.yml
+
+upgrade-playbook:
+	cd provisioning && ansible-playbook -i hosts.yml upgrade.yml
+
+sshd-playbook:
+	cd provisioning && ansible-playbook -i hosts.yml sshd.yml
 
 deploy:
 	ssh ${USER}@${ADDR} -p ${PORT} 'sudo mkdir -p /sys/fs/cgroup/systemd'
@@ -21,8 +30,8 @@ deploy:
 	ssh ${USER}@${ADDR} -p ${PORT} 'cd server && docker-compose up -d --build --remove-orphans'
 
 create-user:
-	ssh ${ROOT}@${ADDR} -p ${PORT} 'adduser --disabled-password --uid "${UID}" -gecos "" ${USER}'
-	ssh ${ROOT}@${ADDR} -p ${PORT} "echo '${USER}:${PASS}' | chpasswd"
-	ssh ${ROOT}@${ADDR} -p ${PORT} 'usermod -aG sudo ${USER}'
-	ssh ${ROOT}@${ADDR} -p ${PORT} "echo '${USER} ALL=(ALL) NOPASSWD:ALL' | sudo EDITOR='tee -a' visudo"
-	ssh-copy-id -p ${PORT} ${USER}@${ADDR}
+	ssh ${ROOT}@${ADDR} 'adduser --disabled-password --uid "${UID}" -gecos "" ${USER}'
+	ssh ${ROOT}@${ADDR} "echo '${USER}:${PASS}' | chpasswd"
+	ssh ${ROOT}@${ADDR} 'usermod -aG sudo ${USER}'
+	ssh ${ROOT}@${ADDR} "echo '${USER} ALL=(ALL) NOPASSWD:ALL' | sudo EDITOR='tee -a' visudo"
+	ssh-copy-id ${USER}@${ADDR}
