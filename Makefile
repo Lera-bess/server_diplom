@@ -7,7 +7,7 @@ HOST = ${USER}@${ADDR}
 .PHONY: init
 #------------------------------##########--------------------------------
 
-init: create-user sshd-playbook server-playbook upgrade-playbook deploy
+init: create-user create-guest-user sshd-playbook server-playbook upgrade-playbook deploy
 update: server-playbook deploy
 
 server-playbook:
@@ -36,3 +36,10 @@ create-user:
 	ssh ${ROOT}@${ADDR} 'usermod -aG sudo ${USER}'
 	ssh ${ROOT}@${ADDR} "echo '${USER} ALL=(ALL) NOPASSWD:ALL' | sudo EDITOR='tee -a' visudo"
 	ssh-copy-id ${USER}@${ADDR}
+
+create-guest-user:
+	ssh ${ROOT}@${ADDR} 'adduser --disabled-password --uid "${GUEST_UID}" -gecos "" ${GUEST_USER}'
+	ssh ${ROOT}@${ADDR} "echo '${GUEST_USER}:${GUEST_PASS}' | chpasswd"
+	ssh ${ROOT}@${ADDR} 'groupadd guest'
+	ssh ${ROOT}@${ADDR} 'usermod -aG guest ${GUEST_USER}'
+

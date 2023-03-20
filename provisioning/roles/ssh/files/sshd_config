@@ -10,6 +10,10 @@
 
 Include /etc/ssh/sshd_config.d/*.conf
 
+Match Group guest
+  PasswordAuthentication yes
+
+Match all
 Port 8404
 Protocol 2
 PasswordAuthentication no
