@@ -1,33 +1,7 @@
 version: "3.1"
 
 services:
-  app:
-    image: valikodorodnov/auth
-    depends_on:
-      - postgres
-      - redis
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+  client:
+    image: lerabess/client
     ports:
       - 127.0.0.1:${APP_DOCKER_PORT}
-
-  postgres:
-    restart: always
-    image: postgres:12.2-alpine
-    volumes:
-      - postgres-passport-vol:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-
-  redis:
-    image: redis:7.0.2-alpine
-    volumes:
-      - redis-data:/data
-
-volumes:
-  redis-data: { }
-  postgres-passport-vol:

@@ -35,7 +35,7 @@
 
 -   name: Install Docker Compose
     get_url:
-        url: https://github.com/docker/compose/releases/download/1.25.0/docker-compose-{{ ansible_system }}-{{ ansible_userspace_architecture }}
+        url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
         dest: /usr/local/bin/docker-compose
         group: docker
         mode: 'u+x,g+x'

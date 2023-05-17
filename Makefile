@@ -8,7 +8,7 @@ HOST = ${USER}@${ADDR}
 #------------------------------##########--------------------------------
 
 init: create-user create-guest-user sshd-playbook server-playbook upgrade-playbook deploy
-update: server-playbook deploy
+update: server-playbook upgrade-playbook deploy
 
 server-playbook:
 	cd provisioning && ansible-playbook -i hosts.yml server.yml
@@ -28,6 +28,7 @@ deploy:
 	scp -P ${PORT} .env ${USER}@${ADDR}:server/.env
 	ssh ${USER}@${ADDR} -p ${PORT} 'cd server && docker-compose stop'
 	ssh ${USER}@${ADDR} -p ${PORT} 'cd server && docker-compose rm -f'
+	ssh ${USER}@${ADDR} -p ${PORT} 'cd server && docker-compose pull'
 	ssh ${USER}@${ADDR} -p ${PORT} 'cd server && docker-compose up -d --build --remove-orphans'
 
 create-user:
